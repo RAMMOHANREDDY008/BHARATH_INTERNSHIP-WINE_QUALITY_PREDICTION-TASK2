@@ -1,0 +1,114 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sn
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+     
+dataset=pd.read_csv('winequality-white.csv', sep=';')
+     
+dataset.head()
+
+dataset.isnull().sum()
+     fig, axes = plt.subplots(nrows=2,ncols=1)
+fig.set_size_inches(10,20)
+sn.boxplot(data=dataset,orient="v",ax=axes[0])
+sn.boxplot(data=dataset,y="quality",orient="pH",ax=axes[1])
+     
+sn.countplot(x="quality", data=dataset)
+plt.xlabel("Wine Quality (0-10 scale)")
+plt.show()
+corrMatt=dataset.corr()
+mask=np.array(corrMatt)
+mask[np.tril_indices_from(mask)]=False
+fig,ax=plt.subplots()
+fig.set_size_inches(10,20)
+sn.heatmap(corrMatt, mask=mask,vmax=.8, square=True,annot=True)
+X=dataset.iloc[:, :-1].values
+y=dataset.iloc[:, -1].values
+X=np.append(arr=np.ones((X.shape[0],1)), values=X, axis=1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+sc_X=StandardScaler()
+X_train=sc_X.fit_transform(X_train)
+X_test=sc_X.transform(X_test)
+from sklearn.linear_model import LinearRegression
+regressor=LinearRegression()
+regressor.fit(X_train,y_train)
+prediction=regressor.predict(X_test)
+     
+prediction1=pd.DataFrame(prediction)
+prediction1.head()
+plt.scatter(y_test,prediction, c='r')
+plt.xlabel('Actual Quantity')
+plt.ylabel('Predicted Quantity')
+plt.title('Predicted Quantity Vs Actual Quantity')
+plt.show()
+     
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+from warnings import filterwarnings
+filterwarnings(action='ignore')
+     wine = pd.read_csv("winequality-red.csv")
+print("Successfully Imported Data!")
+wine.head()
+
+wine.describe(include='all')
+print(wine.isna().sum())
+wine.corr()
+wine.groupby('quality').mean()
+wine.plot(kind ='box',subplots = True, layout =(4,4),sharex = False)
+
+wine.plot(kind ='density',subplots = True, layout =(4,4),sharex = False)
+
+wine.hist(figsize=(10,10),bins=50)
+plt.show()
+corr = wine.corr()
+sns.heatmap(corr,annot=True)
+     sns.pairplot(wine)
+wine['goodquality'] = [1 if x >= 7 else 0 for x in wine['quality']]
+X = wine.drop(['quality','goodquality'], axis = 1)
+Y = wine['goodquality']
+print(X)
+
+print(Y)
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+
+from sklearn.ensemble import ExtraTreesClassifier
+classifiern = ExtraTreesClassifier()
+classifiern.fit(X,Y)
+score = classifiern.feature_importances_
+print(score)
+     from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.3,random_state=7)
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X_train,Y_train)
+Y_pred = model.predict(X_test)
+from sklearn.metrics import accuracy_score,confusion_matrix
+print("Accuracy Score:",accuracy_score(Y_test,Y_pred))
+     confusion_mat = confusion_matrix(Y_test,Y_pred)
+print(confusion_mat)
+     from sklearn.neighbors import KNeighborsClassifier
+model = KNeighborsClassifier(n_neighbors=3)
+model.fit(X_train,Y_train)
+y_pred = model.predict(X_test)
+
+from sklearn.metrics import accuracy_score
+print("Accuracy Score:",accuracy_score(Y_test,y_pred))
+     from sklearn.ensemble import RandomForestClassifier
+model2 = RandomForestClassifier(random_state=1)
+model2.fit(X_train, Y_train)
+y_pred2 = model2.predict(X_test)
+
+from sklearn.metrics import accuracy_score
+print("Accuracy Score:",accuracy_score(Y_test,y_pred2))
+     results = pd.DataFrame({
+    'Model': ['Logistic Regression','KNN', 'SVC','Decision Tree' ,'GaussianNB','Random Forest','Xgboost'],
+    'Score': [0.870,0.872,0.868,0.864,0.833,0.893,0.879]})
+
+result_df = results.sort_values(by='Score', ascending=False)
+result_df = result_df.set_index('Score')
